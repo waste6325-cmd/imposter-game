@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Imposter Game</title>
 <style>
 * { box-sizing: border-box; }
@@ -17,6 +17,7 @@ body {
     align-items: center;
     color: white;
     padding: 1rem;
+    touch-action: manipulation; /* Prevent zoom gestures */
 }
 
 .container {
@@ -153,6 +154,14 @@ let totalPlayers=0, playerNames=[], assignments=[], currentPlayer=0, round=1;
 let lastImposter=-1, lastCommonName="", lastImposterName="";
 let imposterGetsName=true;
 
+// Prevent double-tap zoom
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+    let now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) event.preventDefault();
+    lastTouchEnd = now;
+}, false);
+
 function setImposterNameOption(option){
     imposterGetsName=option;
     document.getElementById("choice").classList.add("hidden");
@@ -243,13 +252,11 @@ function reveal(){
 }
 
 function nextPlayer(){ currentPlayer++; updateCard(); }
-
 function endRound(){ 
     document.getElementById("game").classList.add("hidden"); 
     document.getElementById("endScreen").classList.remove("hidden"); 
     round++; 
 }
-
 function nextRound(){ startRound(); }
 </script>
 </body>
