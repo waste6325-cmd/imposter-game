@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Imposter Game</title>
-
 <style>
 * { box-sizing: border-box; }
 
@@ -29,112 +28,97 @@ body {
 .hidden { display: none; }
 
 h1 {
-    font-size: 8vw;
+    font-size: 2rem;
     margin-bottom: 1rem;
 }
 
 .card {
     background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(18px);
-    border-radius: 5vw;
-    padding: 5vw;
-    box-shadow: 0 5vw 10vw rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1rem 2rem rgba(0,0,0,0.5);
+    margin-bottom: 1rem;
     animation: popIn 0.4s ease;
 }
 
 @keyframes popIn {
-    from { opacity: 0; transform: scale(0.9); }
+    from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
 
 input {
     width: 100%;
-    padding: 3vw;
-    font-size: 4vw;
-    border-radius: 2vw;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
     border: none;
-    margin-bottom: 3vw;
+    margin-bottom: 1rem;
 }
 
 button {
-    padding: 3vw 6vw;
-    font-size: 4vw;
-    border-radius: 5vw;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
     border: none;
     cursor: pointer;
     transition: 0.2s;
-    margin-top: 3vw;
+    margin: 0.5rem 0;
 }
 
 button:active { transform: scale(0.95); }
 
-.start-btn {
-    background: linear-gradient(135deg, #00f260, #0575e6);
-    color: black;
+.start-btn { background: linear-gradient(135deg, #00f260, #0575e6); color: black; }
+.skip-btn { background: transparent; color: #ccc; border: 1px solid #555; }
+.reveal-btn { background: linear-gradient(135deg, #f7971e, #ffd200); color: black; }
+.next-btn { background: linear-gradient(135deg, #00c6ff, #0072ff); color: black; }
+.end-btn { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white; }
+
+.player-title { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.info { opacity: 0.8; margin-bottom: 1rem; font-size: 1rem; }
+.name { font-size: 1.2rem; font-weight: 700; color: #ffe259; margin: 1rem 0; transition: all 0.3s ease; }
+.name.imposter { color: red; font-weight: bold; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
 }
 
-.skip-btn {
-    background: transparent;
-    color: #ccc;
-    border: 0.3vw solid #555;
-}
-
-.reveal-btn {
-    background: linear-gradient(135deg, #f7971e, #ffd200);
-    color: black;
-}
-
-.next-btn {
-    background: linear-gradient(135deg, #00c6ff, #0072ff);
-    color: black;
-}
-
-.end-btn {
-    background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    color: white;
-    margin-top: 5vw;
-}
-
-.player-title {
-    font-size: 6vw;
-    margin-bottom: 2vw;
-}
-
-.info {
+#roundCounter {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
     opacity: 0.7;
-    margin-bottom: 3vw;
-    font-size: 4vw;
 }
 
-.name {
-    font-size: 6vw;
-    font-weight: 700;
-    color: #ffe259;
-    margin: 4vw 0;
-}
-
-/* Optional: very small screens */
-@media (max-width: 320px) {
-    .card { padding: 8vw; }
-    h1 { font-size: 10vw; }
-    button { font-size: 5vw; padding: 4vw 8vw; }
-    input { font-size: 5vw; padding: 4vw; }
+/* Mobile adjustments */
+@media (max-width: 350px) {
+    h1 { font-size: 1.5rem; }
+    .player-title { font-size: 1.2rem; }
+    .name { font-size: 1rem; }
+    button, input { font-size: 0.9rem; padding: 0.6rem 1rem; }
 }
 </style>
 </head>
-
 <body>
 <div class="container">
 <h1>🕵️ Imposter Game</h1>
+<div id="roundCounter">Round: 1</div>
+
+<!-- STEP 0: IMP NAME OPTION -->
+<div id="choice" class="card">
+    <div>Should the imposter get a secret name?</div><br>
+    <button class="start-btn" onclick="setImposterNameOption(true)">Yes</button>
+    <button class="skip-btn" onclick="setImposterNameOption(false)">No</button>
+</div>
 
 <!-- STEP 1: PLAYER COUNT -->
-<div id="setup" class="card">
+<div id="setup" class="card hidden">
     <div>Players (2–8)</div><br>
     <input type="number" id="players" min="2" max="8" value="4">
     <button class="start-btn" onclick="goToNames()">Next</button>
 </div>
 
-<!-- STEP 2: OPTIONAL PLAYER NAMES -->
+<!-- STEP 2: NAMES -->
 <div id="nameSetup" class="card hidden">
     <div>Enter Player Names (Optional)</div><br>
     <div id="nameInputs"></div>
@@ -164,77 +148,66 @@ button:active { transform: scale(0.95); }
 </div>
 
 <script>
-const secretNames = [
-    "suma","ram","sandhya","vishu","seethu",
-    "pradeep","vaishu","veena","vasu","ammu"
-];
+const secretNames = ["suma","ram","sandhya","vishu","seethu","pradeep","vaishu","veena","vasu","ammu"];
+let totalPlayers=0, playerNames=[], assignments=[], currentPlayer=0, round=1;
+let lastImposter=-1, lastCommonName="", lastImposterName="";
+let imposterGetsName=true;
 
-let totalPlayers = 0;
-let playerNames = [];
-let assignments = [];
-let currentPlayer = 0;
+function setImposterNameOption(option){
+    imposterGetsName=option;
+    document.getElementById("choice").classList.add("hidden");
+    document.getElementById("setup").classList.remove("hidden");
+}
 
-// Anti-repeat memory
-let lastImposter = -1;
-let lastCommonName = "";
-let lastImposterName = "";
-
-/* ---------- SETUP ---------- */
-function goToNames() {
-    totalPlayers = document.getElementById("players").value;
-    const box = document.getElementById("nameInputs");
-    box.innerHTML = "";
-
-    for (let i = 0; i < totalPlayers; i++) {
-        box.innerHTML += `<input placeholder="Player ${i + 1} (optional)">`;
+function goToNames(){
+    totalPlayers=parseInt(document.getElementById("players").value);
+    const box=document.getElementById("nameInputs");
+    box.innerHTML="";
+    for(let i=0;i<totalPlayers;i++){
+        box.innerHTML+=`<input placeholder="Player ${i+1} (optional)">`;
     }
-
     document.getElementById("setup").classList.add("hidden");
     document.getElementById("nameSetup").classList.remove("hidden");
 }
 
-function skipNames() {
-    playerNames = Array.from({ length: totalPlayers }, (_, i) => `Player ${i + 1}`);
+function skipNames(){
+    playerNames=Array.from({length:totalPlayers},(_,i)=>`Player ${i+1}`);
     startRound();
 }
 
-function saveNames() {
-    const inputs = document.querySelectorAll("#nameInputs input");
-    playerNames = [];
-
-    for (let i = 0; i < totalPlayers; i++) {
-        playerNames.push(inputs[i].value || `Player ${i + 1}`);
+function saveNames(){
+    const inputs=document.querySelectorAll("#nameInputs input");
+    playerNames=[];
+    for(let i=0;i<totalPlayers;i++){
+        playerNames.push(inputs[i].value||`Player ${i+1}`);
     }
     startRound();
 }
 
-/* ---------- ROUND LOGIC ---------- */
-function startRound() {
-    assignments = [];
-    currentPlayer = 0;
+function startRound(){
+    assignments=[]; currentPlayer=0;
+    document.getElementById("roundCounter").innerText="Round: "+round;
 
     let imposter;
-    do {
-        imposter = Math.floor(Math.random() * totalPlayers);
-    } while (imposter === lastImposter && totalPlayers > 2);
-
-    lastImposter = imposter;
+    do{ imposter=Math.floor(Math.random()*totalPlayers); } 
+    while(imposter===lastImposter && totalPlayers>2);
+    lastImposter=imposter;
 
     let commonName;
-    do {
-        commonName = secretNames[Math.floor(Math.random() * secretNames.length)];
-    } while (commonName === lastCommonName);
+    do{ commonName=secretNames[Math.floor(Math.random()*secretNames.length)]; } 
+    while(commonName===lastCommonName);
 
     let imposterName;
-    do {
-        imposterName = secretNames[Math.floor(Math.random() * secretNames.length)];
-    } while (imposterName === commonName || imposterName === lastImposterName);
+    if(imposterGetsName){
+        do{ imposterName=secretNames[Math.floor(Math.random()*secretNames.length)]; }
+        while(imposterName===commonName || imposterName===lastImposterName);
+    } else { imposterName="You are the Imposter"; }
 
-    lastCommonName = commonName;
-    lastImposterName = imposterName;
+    lastCommonName=commonName;
+    lastImposterName=imposterGetsName?imposterName:"";
 
-    for (let i = 0; i < totalPlayers; i++) {
-        assignments.push(i === imposter ? imposterName : commonName);
+    for(let i=0;i<totalPlayers;i++){
+        assignments.push(i===imposter?imposterName:commonName);
     }
 
     document.getElementById("nameSetup").classList.add("hidden");
@@ -244,43 +217,40 @@ function startRound() {
     updateCard();
 }
 
-/* ---------- GAME UI ---------- */
-function updateCard() {
-    document.getElementById("playerTitle").innerText = playerNames[currentPlayer];
+function updateCard(){
+    document.getElementById("playerTitle").innerText=playerNames[currentPlayer];
     document.getElementById("infoText").classList.remove("hidden");
-    document.getElementById("nameText").classList.add("hidden");
+    const nameText=document.getElementById("nameText");
+    nameText.classList.add("hidden");
+    nameText.classList.remove("imposter");
     document.getElementById("revealBtn").classList.remove("hidden");
     document.getElementById("nextBtn").classList.add("hidden");
     document.getElementById("endBtn").classList.add("hidden");
 }
 
-function reveal() {
-    document.getElementById("nameText").innerText = assignments[currentPlayer];
-    document.getElementById("nameText").classList.remove("hidden");
+function reveal(){
+    const nameText=document.getElementById("nameText");
+    nameText.innerText=assignments[currentPlayer];
+    if(assignments[currentPlayer]==="You are the Imposter"){
+        nameText.classList.add("imposter");
+    }
+    nameText.classList.remove("hidden");
     document.getElementById("infoText").classList.add("hidden");
     document.getElementById("revealBtn").classList.add("hidden");
 
-    if (currentPlayer === totalPlayers - 1) {
-        document.getElementById("endBtn").classList.remove("hidden");
-    } else {
-        document.getElementById("nextBtn").classList.remove("hidden");
-    }
+    if(currentPlayer===totalPlayers-1){ document.getElementById("endBtn").classList.remove("hidden"); }
+    else { document.getElementById("nextBtn").classList.remove("hidden"); }
 }
 
-function nextPlayer() {
-    currentPlayer++;
-    updateCard();
+function nextPlayer(){ currentPlayer++; updateCard(); }
+
+function endRound(){ 
+    document.getElementById("game").classList.add("hidden"); 
+    document.getElementById("endScreen").classList.remove("hidden"); 
+    round++; 
 }
 
-function endRound() {
-    document.getElementById("game").classList.add("hidden");
-    document.getElementById("endScreen").classList.remove("hidden");
-}
-
-function nextRound() {
-    startRound();
-}
+function nextRound(){ startRound(); }
 </script>
-
 </body>
 </html>
