@@ -8,145 +8,74 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-* { box-sizing: border-box; }
+*{box-sizing:border-box}
 
 body{
- margin:0;
- min-height:100vh;
- font-family:'Poppins',sans-serif;
- background:radial-gradient(circle at top,#2b1055,#000010);
- display:flex;
- justify-content:center;
- align-items:center;
- color:white;
- touch-action:manipulation;
+ margin:0;min-height:100vh;font-family:'Poppins',sans-serif;
+ background:radial-gradient(circle at top,#2d0b59,#0b0016);
+ display:flex;justify-content:center;align-items:center;
+ color:white;touch-action:manipulation;
 }
+.container{width:100%;max-width:420px;padding:1rem;text-align:center}
+.hidden{display:none}
 
-.container{
- width:100%;
- max-width:420px;
- padding:1rem;
- text-align:center;
-}
-
-.hidden{display:none;}
-
-h1{font-size:2.2rem;margin-bottom:.3rem;}
-
-#roundCounter{opacity:.6;margin-bottom:1rem;}
+h1{font-size:2.2rem;margin-bottom:.3rem}
+#roundCounter{opacity:.6;margin-bottom:.8rem}
 
 .card{
  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.05));
  backdrop-filter:blur(18px);
- border-radius:1.5rem;
- padding:1.8rem;
- box-shadow:0 25px 50px rgba(0,0,0,.7),
- inset 0 0 0 1px rgba(255,255,255,.1);
- margin-bottom:1rem;
- animation:fadeUp .4s ease;
+ border-radius:1.5rem;padding:1.8rem;
+ box-shadow:0 25px 50px rgba(0,0,0,.7);
+ margin-bottom:1rem;animation:fadeUp .4s ease;
 }
-
 @keyframes fadeUp{
  from{opacity:0;transform:translateY(20px) scale(.96)}
  to{opacity:1;transform:none}
 }
 
+.player-title{font-size:1.5rem;font-weight:600;margin-bottom:.7rem}
+.info{opacity:.7;margin-bottom:1rem}
+
 input{
- width:100%;
- padding:.85rem;
- border-radius:.7rem;
- border:none;
- font-size:1rem;
- margin-bottom:.6rem;
+ width:100%;padding:.85rem;border-radius:.7rem;border:none;
+ font-size:1rem;margin-bottom:.6rem;
 }
 
 button{
- width:100%;
- padding:.9rem;
- border:none;
- border-radius:.8rem;
- font-size:1rem;
- font-weight:600;
- cursor:pointer;
- margin-top:.5rem;
- transition:.25s;
+ width:100%;padding:.9rem;border:none;border-radius:.8rem;
+ font-size:1rem;font-weight:600;cursor:pointer;
+ margin-top:.5rem;transition:.25s;
 }
-
 button:active{transform:scale(.96)}
 
-.start-btn{
- background:linear-gradient(135deg,#f857a6,#ff5858);
- color:#fff;
-}
+.primary{background:linear-gradient(135deg,#ff6a88,#ff9068);color:#fff}
+.secondary{background:transparent;color:#ddd;border:1px solid rgba(255,255,255,.4)}
+.gold{background:linear-gradient(135deg,#fbc531,#e1a100);color:#000}
+.purple{background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff}
+.red{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff}
 
-.skip-btn{
- background:transparent;
- color:#ddd;
- border:1px solid rgba(255,255,255,.4);
+.list-item{
+ display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center;
 }
-
-.reveal-btn{
- background:linear-gradient(135deg,#fbc531,#f5a623);
- color:#000;
+.list-item span{
+ flex:1;background:rgba(255,255,255,.15);
+ padding:.5rem;border-radius:.5rem;
 }
-
-.next-btn{
- background:linear-gradient(135deg,#9b59b6,#8e44ad);
- color:#fff;
+.list-item button{
+ width:auto;padding:.4rem .6rem;font-size:.8rem;
 }
-
-.end-btn{
- background:linear-gradient(135deg,#ff416c,#ff4b2b);
- color:#fff;
-}
-
-.player-title{
- font-size:1.6rem;
- font-weight:600;
- margin-bottom:.6rem;
-}
-
-.info{opacity:.75;margin-bottom:1rem;}
 
 .name{
- font-size:1.5rem;
- font-weight:700;
- margin:1.2rem 0;
+ font-size:1.5rem;font-weight:700;margin:1.2rem 0;
  color:#ffeaa7;
 }
-
 .name.imposter{
  color:#ff4b2b;
  text-shadow:0 0 18px rgba(255,75,43,.9);
  animation:pulse 1s infinite;
 }
-
-@keyframes pulse{
- 0%,100%{transform:scale(1)}
- 50%{transform:scale(1.12)}
-}
-
-.list-item{
- display:flex;
- gap:.5rem;
- margin-bottom:.4rem;
-}
-
-.list-item span{
- flex:1;
- background:rgba(255,255,255,.15);
- padding:.45rem;
- border-radius:.5rem;
-}
-
-.list-item button{
- width:auto;
- background:#ff4b2b;
- color:#fff;
- padding:.4rem .6rem;
- font-size:.8rem;
-}
+@keyframes pulse{50%{transform:scale(1.12)}}
 </style>
 </head>
 
@@ -156,221 +85,222 @@ button:active{transform:scale(.96)}
 <h1>🕵️ Imposter</h1>
 <div id="roundCounter">Round: 1</div>
 
-<!-- START DECISION -->
+<!-- START -->
 <div id="startChoice" class="card">
- <div class="player-title">Choose Names</div>
- <button class="start-btn" onclick="useDefaultSecrets()">Use Default Names</button>
- <button class="skip-btn" onclick="showAddNames()">Add New Names</button>
+ <div class="player-title">Choose Secret Names</div>
+ <button class="primary" onclick="useDefault()">Use Default</button>
+ <button class="secondary" onclick="showSaved()">Use Saved</button>
+ <button class="secondary" onclick="showAdd()">Add New</button>
 </div>
 
-<!-- ADD SECRET NAMES -->
-<div id="secretSetup" class="card hidden">
- <div class="player-title">Add Secret Names</div>
- <input id="secretInput" placeholder="Enter a name">
- <button class="start-btn" onclick="addSecret()">Add</button>
+<!-- ADD NAMES -->
+<div id="addNames" class="card hidden">
+ <div class="player-title">Add Names</div>
+ <input id="secretInput" placeholder="Enter name">
+ <button class="primary" onclick="addSecret()">Add</button>
  <div id="secretList"></div>
- <button class="start-btn" onclick="useSecrets()">Continue</button>
+ <button class="primary" onclick="askTitle()">Continue</button>
 </div>
 
-<!-- IMPOSTER OPTION -->
-<div id="choice" class="card hidden">
- <div class="player-title">Should Imposter get a name?</div>
- <button class="start-btn" onclick="setImposterNameOption(true)">Yes</button>
- <button class="skip-btn" onclick="setImposterNameOption(false)">No</button>
+<!-- SAVE TITLE -->
+<div id="saveTitle" class="card hidden">
+ <div class="player-title">Save Set</div>
+ <input id="setTitle" placeholder="Example: Friends / College">
+ <button class="primary" onclick="saveSet()">Save & Continue</button>
+ <button class="secondary" onclick="skipSave()">Skip Saving</button>
 </div>
 
-<!-- PLAYER COUNT -->
-<div id="setup" class="card hidden">
- <div class="player-title">Players (2–8)</div>
- <input type="number" id="players" min="2" max="8" value="4">
- <button class="start-btn" onclick="goToNames()">Next</button>
-</div>
-
-<!-- PLAYER NAMES -->
-<div id="nameSetup" class="card hidden">
- <div class="player-title">Player Names</div>
- <div id="nameInputs"></div>
- <button class="start-btn" onclick="saveNames()">Start</button>
- <button class="skip-btn" onclick="skipNames()">Skip</button>
+<!-- SAVED LIST -->
+<div id="savedList" class="card hidden">
+ <div class="player-title">Saved Sets</div>
+ <div id="savedSets"></div>
+ <button class="secondary" onclick="backToStart()">Back</button>
 </div>
 
 <!-- GAME -->
-<div id="game" class="hidden">
- <div class="card">
-  <div class="player-title" id="playerTitle"></div>
-  <div class="info" id="infoText">Pass phone & tap reveal</div>
-  <div class="name hidden" id="nameText"></div>
+<div id="game" class="card hidden">
+ <div class="player-title" id="playerTitle"></div>
+ <div class="info" id="infoText">Pass phone & tap reveal</div>
+ <div class="name hidden" id="nameText"></div>
 
-  <button class="reveal-btn" id="revealBtn" onclick="reveal()">Reveal</button>
-  <button class="next-btn hidden" id="nextBtn" onclick="nextPlayer()">Next</button>
-  <button class="end-btn hidden" id="endBtn" onclick="endRound()">End</button>
- </div>
+ <button class="gold" id="revealBtn" onclick="reveal()">Reveal</button>
+ <button class="purple hidden" id="nextBtn" onclick="nextPlayer()">Next</button>
 </div>
 
-<!-- END -->
-<div id="endScreen" class="hidden">
- <div class="card">
-  <div class="player-title">Next Round 🎉</div>
-  <button class="start-btn" onclick="nextRound()">Start</button>
- </div>
+<!-- ROUND END -->
+<div id="roundEnd" class="card hidden">
+ <div class="player-title">Round Complete 🎉</div>
+ <button class="primary" onclick="nextRound()">Next Round</button>
 </div>
 
 </div>
 
 <script>
-const defaultSecrets=["Suma","Ram","Sandhya","Vishu","Seethu","Pradeep","Vaishu","Veena","Vasu","Ammu"];
-let secretNames=[];
+const defaultSecrets=["Suma","Ram","Sandhya","Vishu","Seethu","Pradeep","Vaishu","Veena"];
+const storeKey="imposterNameSets";
 
-let totalPlayers=0,playerNames=[],assignments=[],currentPlayer=0,round=1;
-let lastImposter=-1,lastCommonName="",lastImposterName="";
-let imposterGetsName=true;
+let secretNames=[],sets={},players=["Player 1","Player 2","Player 3","Player 4"];
+let assignments=[],currentPlayer=0,round=1,lastImposter=-1;
 
-/* Prevent double tap zoom */
-let lastTouch=0;
-document.addEventListener("touchend",e=>{
- let now=Date.now();
- if(now-lastTouch<300)e.preventDefault();
- lastTouch=now;
-},{passive:false});
+/* ---------- STORAGE ---------- */
+function loadSets(){sets=JSON.parse(localStorage.getItem(storeKey)||"{}")}
+function saveSets(){localStorage.setItem(storeKey,JSON.stringify(sets))}
 
-/* START FLOW */
-function showAddNames(){
- startChoice.classList.add("hidden");
- secretSetup.classList.remove("hidden");
-}
-
-function useDefaultSecrets(){
+/* ---------- START ---------- */
+function useDefault(){
  secretNames=[...defaultSecrets];
+ startGame();
+}
+function showAdd(){
  startChoice.classList.add("hidden");
- choice.classList.remove("hidden");
+ addNames.classList.remove("hidden");
+}
+function showSaved(){
+ loadSets();
+ if(Object.keys(sets).length===0) return alert("No saved sets");
+ startChoice.classList.add("hidden");
+ savedList.classList.remove("hidden");
+ renderSaved();
 }
 
+/* ---------- ADD & SAVE ---------- */
 function addSecret(){
  if(!secretInput.value.trim())return;
  secretNames.push(secretInput.value.trim());
  secretInput.value="";
  renderSecrets();
 }
-
 function renderSecrets(){
  secretList.innerHTML="";
  secretNames.forEach((n,i)=>{
   secretList.innerHTML+=`
    <div class="list-item">
     <span>${n}</span>
-    <button onclick="removeSecret(${i})">✕</button>
+    <button class="red" onclick="secretNames.splice(${i},1);renderSecrets()">✕</button>
    </div>`;
  });
 }
-
-function removeSecret(i){
- secretNames.splice(i,1);
- renderSecrets();
-}
-
-function useSecrets(){
+function askTitle(){
  if(secretNames.length<2) return alert("Add at least 2 names");
- secretSetup.classList.add("hidden");
- choice.classList.remove("hidden");
+ addNames.classList.add("hidden");
+ saveTitle.classList.remove("hidden");
+}
+function saveSet(){
+ const t=setTitle.value.trim();
+ if(!t) return alert("Enter title");
+ loadSets(); sets[t]=[...secretNames]; saveSets();
+ startGame();
+}
+function skipSave(){ startGame(); }
+
+/* ---------- SAVED LIST ---------- */
+function renderSaved(){
+ savedSets.innerHTML="";
+ Object.keys(sets).forEach(t=>{
+  savedSets.innerHTML+=`
+   <div class="list-item">
+    <span>${t}</span>
+    <button class="primary" onclick="selectSet('${t}')">Use</button>
+    <button class="red" onclick="deleteSet('${t}')">✕</button>
+   </div>`;
+ });
+}
+function selectSet(t){
+ secretNames=[...sets[t]];
+ startGame();
+}
+function deleteSet(t){
+ if(confirm("Delete this set?")){
+  delete sets[t];saveSets();renderSaved();
+ }
+}
+function backToStart(){
+ savedList.classList.add("hidden");
+ startChoice.classList.remove("hidden");
 }
 
-/* GAME SETUP */
-function setImposterNameOption(v){
- imposterGetsName=v;
- choice.classList.add("hidden");
- setup.classList.remove("hidden");
-}
+/* ---------- GAME ---------- */
+function startGame(){
+ startChoice.classList.add("hidden");
+ addNames.classList.add("hidden");
+ saveTitle.classList.add("hidden");
+ savedList.classList.add("hidden");
+ roundEnd.classList.add("hidden");
 
-function goToNames(){
- totalPlayers=+players.value;
- nameInputs.innerHTML="";
- for(let i=0;i<totalPlayers;i++)
-  nameInputs.innerHTML+=`<input placeholder="Player ${i+1}">`;
- setup.classList.add("hidden");
- nameSetup.classList.remove("hidden");
-}
-
-function skipNames(){
- playerNames=[...Array(totalPlayers)].map((_,i)=>`Player ${i+1}`);
- startRound();
-}
-
-function saveNames(){
- const inputs=document.querySelectorAll("#nameInputs input");
- playerNames=[...inputs].map((i,idx)=>i.value||`Player ${idx+1}`);
- startRound();
-}
-
-function startRound(){
  assignments=[];
  currentPlayer=0;
- roundCounter.innerText="Round: "+round;
 
- let imp;
- do imp=Math.floor(Math.random()*totalPlayers);
- while(imp===lastImposter && totalPlayers>2);
- lastImposter=imp;
-
- let common;
- do common=secretNames[Math.floor(Math.random()*secretNames.length)];
- while(common===lastCommonName);
- lastCommonName=common;
-
- let impName="You are the Imposter";
- if(imposterGetsName){
-  do impName=secretNames[Math.floor(Math.random()*secretNames.length)];
-  while(impName===common||impName===lastImposterName);
-  lastImposterName=impName;
- }
-
- for(let i=0;i<totalPlayers;i++)
-  assignments.push(i===imp?impName:common);
-
- nameSetup.classList.add("hidden");
- endScreen.classList.add("hidden");
+ pickAssignments();
  game.classList.remove("hidden");
  updateCard();
 }
 
-function updateCard(){
- playerTitle.innerText=playerNames[currentPlayer];
- infoText.classList.remove("hidden");
- nameText.classList.add("hidden");
- nameText.classList.remove("imposter");
+function pickAssignments(){
+ let imp;
+ do{
+  imp=Math.floor(Math.random()*players.length);
+ }while(imp===lastImposter && players.length>2);
+ lastImposter=imp;
 
- revealBtn.classList.remove("hidden");
- nextBtn.classList.add("hidden");
- endBtn.classList.add("hidden");
+ const secret=secretNames[Math.floor(Math.random()*secretNames.length)];
+
+ players.forEach((_,i)=>{
+  assignments.push(i===imp?"You are the Imposter":secret);
+ });
 }
+
+function updateCard(){
+  playerTitle.innerText = players[currentPlayer];
+  infoText.classList.remove("hidden");
+
+  nameText.classList.add("hidden");
+  nameText.classList.remove("imposter");   // ✅ RESET RED STATE
+  nameText.innerText = "";                 // ✅ CLEAR OLD TEXT
+
+  revealBtn.classList.remove("hidden");
+  nextBtn.classList.add("hidden");
+}
+
 
 function reveal(){
- nameText.innerText=assignments[currentPlayer];
- if(assignments[currentPlayer]==="You are the Imposter")
-  nameText.classList.add("imposter");
+  nameText.innerText = assignments[currentPlayer];
 
- nameText.classList.remove("hidden");
- infoText.classList.add("hidden");
+  if(assignments[currentPlayer] === "You are the Imposter"){
+    nameText.classList.add("imposter");   // 🔴 ONLY IMPOSTER
+  } else {
+    nameText.classList.remove("imposter"); // ✅ NORMAL PLAYER
+  }
 
- /* FIX: hide reveal after click */
- revealBtn.classList.add("hidden");
+  nameText.classList.remove("hidden");
+  infoText.classList.add("hidden");
 
- currentPlayer===totalPlayers-1
-  ? endBtn.classList.remove("hidden")
-  : nextBtn.classList.remove("hidden");
+  revealBtn.classList.add("hidden");
+  nextBtn.classList.remove("hidden");
 }
+
 
 function nextPlayer(){
  currentPlayer++;
- updateCard();
+ if(currentPlayer>=players.length){
+  endRound();
+ }else updateCard();
 }
 
 function endRound(){
  game.classList.add("hidden");
- endScreen.classList.remove("hidden");
- round++;
+ roundEnd.classList.remove("hidden");
 }
 
-function nextRound(){ startRound(); }
+function nextRound(){
+ round++;
+ roundCounter.innerText="Round: "+round;
+ assignments=[];
+ currentPlayer=0;
+ roundEnd.classList.add("hidden");
+ pickAssignments();
+ game.classList.remove("hidden");
+ updateCard();
+}
 </script>
 </body>
 </html>
