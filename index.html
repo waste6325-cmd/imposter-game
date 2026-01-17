@@ -87,12 +87,15 @@ button:active{transform:scale(.96)}
 
 <!-- START -->
 <div id="startChoice" class="card">
- <div class="player-title">Choose Players & Names</div>
+ <div class="player-title">Game Settings</div>
 
- <div class="info">Number of Players (2 – 10)</div>
+ <div class="info">Players (2 – 10)</div>
  <input type="number" id="playerCount" min="2" max="10" value="4">
 
- <button class="primary" onclick="useDefault()">Use Default</button>
+ <div class="info">Imposters</div>
+ <input type="number" id="imposterCount" min="1" value="1">
+
+ <button class="primary" onclick="useDefault()">Use Default Names</button>
  <button class="secondary" onclick="showSaved()">Use Saved</button>
  <button class="secondary" onclick="showAdd()">Add New</button>
 </div>
@@ -144,7 +147,8 @@ const defaultSecrets=["Suma","Ram","Sandhya","Vishu","Seethu","Pradeep","Vaishu"
 const storeKey="imposterNameSets";
 
 let secretNames=[],sets={},players=[];
-let assignments=[],currentPlayer=0,round=1,lastImposter=-1;
+let assignments=[],currentPlayer=0,round=1,lastMainImposter=-1;
+let imposterTotal=1;
 
 /* ---------- STORAGE ---------- */
 function loadSets(){sets=JSON.parse(localStorage.getItem(storeKey)||"{}")}
@@ -152,9 +156,14 @@ function saveSets(){localStorage.setItem(storeKey,JSON.stringify(sets))}
 
 /* ---------- PLAYERS ---------- */
 function setupPlayers(){
- const count = Math.min(10, Math.max(2, parseInt(playerCount.value || 4)));
+ const p = Math.min(10, Math.max(2, parseInt(playerCount.value || 4)));
  players=[];
- for(let i=1;i<=count;i++) players.push("Player "+i);
+ for(let i=1;i<=p;i++) players.push("Player "+i);
+
+ const maxImp = Math.floor(p/2);
+ imposterCount.max = maxImp;
+ imposterTotal = Math.min(maxImp, Math.max(1, parseInt(imposterCount.value||1)));
+ imposterCount.value = imposterTotal;
 }
 
 /* ---------- START ---------- */
@@ -250,16 +259,22 @@ function startGame(){
 }
 
 function pickAssignments(){
- let imp;
- do{
-  imp=Math.floor(Math.random()*players.length);
- }while(imp===lastImposter && players.length>2);
- lastImposter=imp;
+ assignments=[];
+ let imposterIndexes=[];
+
+ while(imposterIndexes.length < imposterTotal){
+  let r=Math.floor(Math.random()*players.length);
+  if(!imposterIndexes.includes(r) && r!==lastMainImposter){
+   imposterIndexes.push(r);
+  }
+ }
+
+ lastMainImposter = imposterIndexes[0];
 
  const secret=secretNames[Math.floor(Math.random()*secretNames.length)];
 
  players.forEach((_,i)=>{
-  assignments.push(i===imp?"You are the Imposter":secret);
+  assignments.push(imposterIndexes.includes(i) ? "You are the Imposter" : secret);
  });
 }
 
