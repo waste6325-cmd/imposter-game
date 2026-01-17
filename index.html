@@ -87,7 +87,11 @@ button:active{transform:scale(.96)}
 
 <!-- START -->
 <div id="startChoice" class="card">
- <div class="player-title">Choose Secret Names</div>
+ <div class="player-title">Choose Players & Names</div>
+
+ <div class="info">Number of Players (2 – 10)</div>
+ <input type="number" id="playerCount" min="2" max="10" value="4">
+
  <button class="primary" onclick="useDefault()">Use Default</button>
  <button class="secondary" onclick="showSaved()">Use Saved</button>
  <button class="secondary" onclick="showAdd()">Add New</button>
@@ -139,23 +143,33 @@ button:active{transform:scale(.96)}
 const defaultSecrets=["Suma","Ram","Sandhya","Vishu","Seethu","Pradeep","Vaishu","Veena"];
 const storeKey="imposterNameSets";
 
-let secretNames=[],sets={},players=["Player 1","Player 2","Player 3","Player 4"];
+let secretNames=[],sets={},players=[];
 let assignments=[],currentPlayer=0,round=1,lastImposter=-1;
 
 /* ---------- STORAGE ---------- */
 function loadSets(){sets=JSON.parse(localStorage.getItem(storeKey)||"{}")}
 function saveSets(){localStorage.setItem(storeKey,JSON.stringify(sets))}
 
+/* ---------- PLAYERS ---------- */
+function setupPlayers(){
+ const count = Math.min(10, Math.max(2, parseInt(playerCount.value || 4)));
+ players=[];
+ for(let i=1;i<=count;i++) players.push("Player "+i);
+}
+
 /* ---------- START ---------- */
 function useDefault(){
+ setupPlayers();
  secretNames=[...defaultSecrets];
  startGame();
 }
 function showAdd(){
+ setupPlayers();
  startChoice.classList.add("hidden");
  addNames.classList.remove("hidden");
 }
 function showSaved(){
+ setupPlayers();
  loadSets();
  if(Object.keys(sets).length===0) return alert("No saved sets");
  startChoice.classList.add("hidden");
@@ -254,21 +268,20 @@ function updateCard(){
   infoText.classList.remove("hidden");
 
   nameText.classList.add("hidden");
-  nameText.classList.remove("imposter");   // ✅ RESET RED STATE
-  nameText.innerText = "";                 // ✅ CLEAR OLD TEXT
+  nameText.classList.remove("imposter");
+  nameText.innerText = "";
 
   revealBtn.classList.remove("hidden");
   nextBtn.classList.add("hidden");
 }
 
-
 function reveal(){
   nameText.innerText = assignments[currentPlayer];
 
   if(assignments[currentPlayer] === "You are the Imposter"){
-    nameText.classList.add("imposter");   // 🔴 ONLY IMPOSTER
+    nameText.classList.add("imposter");
   } else {
-    nameText.classList.remove("imposter"); // ✅ NORMAL PLAYER
+    nameText.classList.remove("imposter");
   }
 
   nameText.classList.remove("hidden");
@@ -277,7 +290,6 @@ function reveal(){
   revealBtn.classList.add("hidden");
   nextBtn.classList.remove("hidden");
 }
-
 
 function nextPlayer(){
  currentPlayer++;
